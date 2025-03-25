@@ -99,12 +99,12 @@ export default function LandingPageContent() {
                     Management Merit - Regular
                   </button>
                 </Link>
-                <Link className="w-full" href={"/management-quota/merit"}>
+                <Link className="w-full" href={"/management-quota/regular"}>
                   <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
                     Management Quota - Regular
                   </button>
                 </Link>
-                <Link className="w-full" href={"/management-quota/merit"}>
+                <Link className="w-full" href={"/management-quota/lateral-entry"}>
                   <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
                     Management Quota - Lateral Entry
                   </button>
