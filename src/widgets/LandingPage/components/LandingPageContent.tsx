@@ -58,7 +58,7 @@ export default function LandingPageContent() {
       )}
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row items-center justify-center flex-1 my-10 lg:m-0 lg:p-4 md:p-0">
+      <div className="flex flex-col md:flex-row items-center justify-center flex-1 my-10 lg:m-0 md:p-0">
         {/* Left Side - Image */}
         <div className="flex-1 flex items-center justify-center w-full md:w-auto">
           <Image
@@ -84,7 +84,7 @@ export default function LandingPageContent() {
               </button>
             </div>
           ) : (
-            <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:p-6 flex flex-col items-center justify-center space-y-5 border border-gray-300 rounded-lg shadow-lg bg-white">
+            <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:px-8 lg:py-12 flex flex-col items-center justify-center space-y-5 border border-gray-300 rounded-lg shadow-lg bg-white">
               {/* Title */}
               <div>
                 <span className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
