@@ -1,49 +1,117 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, User } from "firebase/auth";
+
+import { app } from "@common/config/firebaseConfig";
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 export default function LandingPageContent() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+    } catch (error) {
+      console.error("Login failed: ", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+  };
+
+  if (loading) {
+    return <div className="w-full min-h-screen flex items-center justify-center text-gray-700 text-lg">Loading...</div>;
+  }
+
   return (
-    <div className="w-full min-h-screen flex flex-col md:flex-row items-center justify-center my-10 lg:m-0 lg:p-4 md:p-0">
-      {/* Left Side - Image */}
-      <div className="flex-1 flex items-center justify-center w-full md:w-auto">
-        <Image
-          src={"/carmelpoly.png"}
-          width={1000}
-          height={1000}
-          className="w-3/4 md:w-[30rem] max-w-xs md:max-w-none"
-          alt="Carmel Polytechnic"
-        />
-      </div>
-
-      {/* Right Side - Choices */}
-      <div className="flex-1 flex flex-col items-center lg:justify-center  w-full ">
-        <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:p-6 flex flex-col items-center justify-center space-y-5 border border-gray-300 rounded-lg shadow-lg bg-white">
-          {/* Title */}
-          <div>
-            <span className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
-              Admission 2025-26
-            </span>
+    <div className="w-full min-h-screen flex flex-col">
+      {/* Navbar with User Info */}
+      {user && (
+        <div className="w-full flex items-center justify-between px-6 py-4 shadow-md">
+          <span className="text-lg font-semibold">Welcome, {user.displayName}!</span>
+          <div className="flex items-center gap-4">
+            <Image width={100} height={100} src={user.photoURL || "/default-avatar.png"} alt="User" className="w-10 h-10 rounded-full border border-white shadow-md" />
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md"
+            >
+              Logout
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* Buttons Section */}
-          <div className="lg:w-full flex flex-col items-center gap-4">
-            <Link className="w-full" href={"/management-quota/merit"}>
-              <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
-                Management Merit - Regular
+      {/* Main Content */}
+      <div className="flex flex-col md:flex-row items-center justify-center flex-1 my-10 lg:m-0 lg:p-4 md:p-0">
+        {/* Left Side - Image */}
+        <div className="flex-1 flex items-center justify-center w-full md:w-auto">
+          <Image
+            src={"/carmelpoly.png"}
+            width={1000}
+            height={1000}
+            className="w-3/4 md:w-[30rem] max-w-xs md:max-w-none"
+            alt="Carmel Polytechnic"
+          />
+        </div>
+
+        {/* Right Side - Login or Choices */}
+        <div className="flex-1 flex flex-col items-center lg:justify-center w-full">
+          {!user ? (
+            <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center text-center w-full max-w-sm">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Login to continue</h2>
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition shadow-md"
+              >
+                <img src="/google-icon.png" alt="Google" className="w-6 h-6" />
+                Sign in with Google
               </button>
-            </Link>
-            <Link className="w-full" href={"/management-quota/merit"}>
-              <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
-                Management Quota - Regular
-              </button>
-            </Link>
-            <Link className="w-full" href={"/management-quota/merit"}>
-              <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
-                Management Quota - Lateral Entry
-              </button>
-            </Link>
-          </div>
+            </div>
+          ) : (
+            <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:p-6 flex flex-col items-center justify-center space-y-5 border border-gray-300 rounded-lg shadow-lg bg-white">
+              {/* Title */}
+              <div>
+                <span className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
+                  Admission 2025-26
+                </span>
+              </div>
+
+              {/* Buttons Section */}
+              <div className="lg:w-full flex flex-col items-center gap-4">
+                <Link className="w-full" href={"/management-quota/merit"}>
+                  <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
+                    Management Merit - Regular
+                  </button>
+                </Link>
+                <Link className="w-full" href={"/management-quota/merit"}>
+                  <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
+                    Management Quota - Regular
+                  </button>
+                </Link>
+                <Link className="w-full" href={"/management-quota/merit"}>
+                  <button className="w-full px-4 py-3 bg-azure-600 text-white text-base md:text-lg font-semibold rounded-lg hover:bg-blue-700 transition">
+                    Management Quota - Lateral Entry
+                  </button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
