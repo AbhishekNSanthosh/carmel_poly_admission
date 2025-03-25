@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import { db } from "@common/config/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function AdmissionForm() {
   // Define Tabs
@@ -30,20 +32,67 @@ export default function AdmissionForm() {
     false,
   ]);
 
-  const [preferences, setPreferences] = useState<string[]>(Array(6).fill(""));
+  interface formData {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    place: string; 
+    gender: string;
+    region: string;
+    aadhar: string;
+    address: string;
+    contact1: string;
+    contact2: string;
+    board: string;
+    marks: string;
+    guardianName: string;
+    contact: string;
+    preferences: [string, string, string, string, string];
+   }
+
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    dob: "",
+    place: "",
+    gender: "",
+    region: "",
+    aadhar: "",
+    address: "",
+    contact1: "",
+    contact2: "",
+    board: "",
+    marks: "",
+    guardianName: "",
+    contact: "",
+    preferences: ["", "", "", "", ""] as [string, string, string, string, string],
+  });
+  
 
   // Handle branch selection
-  const handleSelect = (index: number, branch: string) => {
-    const newPreferences = [...preferences];
-    newPreferences[index] = branch;
-    setPreferences(newPreferences);
+    const handlePrefrenceData = (index: number, branch: string) => {
+      const newData = [...formData.preferences] as [string, string, string, string, string];
+      newData[index] = branch;
+      console.log(newData)
+      setFormData((prevState) => ({
+        ...prevState,
+        preferences: newData,
+      }));
+  };
+  
+  const handleDirectChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+              [field]: value,
+    }));
   };
 
   // Get available branches for each dropdown (remove already selected ones)
   const getAvailableBranches = (selectedIndex: number): string[] => {
     return branches.filter(
       (branch) =>
-        !preferences.includes(branch) || preferences[selectedIndex] === branch
+        !formData.preferences.includes(branch) || formData.preferences[selectedIndex] === branch
     );
   };
 
@@ -63,6 +112,28 @@ export default function AdmissionForm() {
       setActiveTab(activeTab - 1);
     }
   };
+
+  const handleSubmit = async () => {
+  //   if (formDatapreferences.some((pref) => pref === "")) {
+  //     alert("Please select all branch preferences.");
+  //     return;
+  //   }
+  
+  //   try {
+  //     const formData = {
+  //       preferences,
+  //       timestamp: new Date(), // Store submission time
+  //     };
+  
+  //     await addDoc(collection(db, "admissions"), formData);
+  
+  //     alert("Form submitted successfully!");
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     alert("Error submitting form. Please try again.");
+  //   }
+  };
+
 
   return (
     <div className="flex min-h-screen p-8">
@@ -94,15 +165,15 @@ export default function AdmissionForm() {
         <div>
           {activeTab === 0 && (
             <BranchPreference
-              preferences={preferences}
-              handleSelect={handleSelect}
+              preferences={formData.preferences}
+              handlePrefrenceData={handlePrefrenceData}
               getAvailableBranches={getAvailableBranches}
             />
           )}
-          {activeTab === 1 && <CandidateProfile />}
-          {activeTab === 2 && <AcademicHistory />}
-          {activeTab === 3 && <QualifyingExamination />}
-          {activeTab === 4 && <GuardianInfo />}
+          {activeTab === 1 && <CandidateProfile handleDirectChange={handleDirectChange} formData={formData} />}
+          {activeTab === 2 && <AcademicHistory handleDirectChange={handleDirectChange} formData={formData}  />}
+          {activeTab === 3 && <QualifyingExamination handleDirectChange={handleDirectChange} formData={formData}  />}
+          {activeTab === 4 && <GuardianInfo handleDirectChange={handleDirectChange} formData={formData} />}
         </div>
 
         {/* Navigation Buttons */}
@@ -116,10 +187,9 @@ export default function AdmissionForm() {
           </button>
           <button
             className="px-6 py-2 bg-azure-600 text-white rounded-lg disabled:opacity-50"
-            onClick={handleNext}
-            disabled={activeTab === tabs.length - 1}
+            onClick={activeTab === tabs.length - 1 ? handleSubmit : handleNext}
           >
-            Next
+            {activeTab === tabs.length - 1 ? "Submit" : "Next"}
           </button>
         </div>
       </div>
@@ -130,14 +200,14 @@ export default function AdmissionForm() {
 // Props Interface for BranchPreference
 interface BranchPreferenceProps {
   preferences: string[];
-  handleSelect: (index: number, branch: string) => void;
+  handlePrefrenceData: (index: number, branch: string) => void;
   getAvailableBranches: (selectedIndex: number) => string[];
 }
 
 // Individual Tab Components
 const BranchPreference: React.FC<BranchPreferenceProps> = ({
   preferences,
-  handleSelect,
+  handlePrefrenceData,
   getAvailableBranches,
 }) => (
   <div className="p-6">
@@ -151,7 +221,7 @@ const BranchPreference: React.FC<BranchPreferenceProps> = ({
           <label className="text-lg font-medium">Preference {index + 1}</label>
           <select
             value={selectedBranch}
-            onChange={(e) => handleSelect(index, e.target.value)}
+            onChange={(e) => handlePrefrenceData(index, e.target.value)}
             className="w-full p-2 border rounded-lg"
           >
             <option value="">Select a branch</option>
@@ -167,7 +237,26 @@ const BranchPreference: React.FC<BranchPreferenceProps> = ({
   </div>
 );
 
-const CandidateProfile: React.FC = () => (
+interface CandidateProfileProps {
+  formData: { firstName: string,
+    lastName: string,
+    dob: string,
+    place: string,
+    gender: string,
+    region:string,
+    aadhar: string,
+    address: string,
+    contact1: string,
+    contact2: string,
+    board: string,
+    marks: string,
+    guardianName: string,
+    contact: string,
+    preferences: [string, string, string, string, string] };
+  handleDirectChange: (field: string, value: string) => void;
+}
+
+const CandidateProfile: React.FC<CandidateProfileProps> = ({ formData ,handleDirectChange}) => (
   <div className="flex flex-col gap-3">
     <h2 className="text-xl font-semibold">Candidate Profile</h2>
     <div className="flex flex-col gap-5">
@@ -175,6 +264,8 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center ">
           <span className="text-sm">First Name</span>
           <input
+            value={formData.firstName}
+            onChange={(e)=>(handleDirectChange("firstName", e.target.value))}
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Joel"
@@ -183,6 +274,8 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center ">
           <span className="text-sm">Last Name</span>
           <input
+            value={formData.lastName}
+            onChange={(e)=>(handleDirectChange("lastName", e.target.value))}
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Joel"
@@ -193,6 +286,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Date of Birth</span>
           <input
+            value={formData.dob}
+            onChange={(e)=>(handleDirectChange("dob", e.target.value))}
+            
             type="date"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
           />
@@ -201,6 +297,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center ">
           <span className="text-sm">Place of birth</span>
           <input
+            value={formData.place}
+            onChange={(e)=>(handleDirectChange("place", e.target.value))}
+            
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Joel"
@@ -210,7 +309,11 @@ const CandidateProfile: React.FC = () => (
       <div className="flex w-full items-start gap-[10px]">
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Gender</span>
-          <select className="bg-gray-100 rounded-md px-3 py-2 w-full">
+          <select
+          value={formData.gender}
+          onChange={(e)=>(handleDirectChange("gender", e.target.value))}
+          
+            className="bg-gray-100 rounded-md px-3 py-2 w-full">
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -221,6 +324,10 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center ">
           <span className="text-sm">Religion</span>
           <input
+            value={formData.region}
+            onChange={(e)=>(handleDirectChange("region", e.target.value))}
+            
+            
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Joel"
@@ -232,6 +339,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Aadhar Number</span>
           <input
+            value={formData.aadhar}
+            onChange={(e)=>(handleDirectChange("aadhar", e.target.value))}
+            
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Enter Aadhar Number"
@@ -241,6 +351,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Address</span>
           <input
+            value={formData.address}
+            onChange={(e)=>(handleDirectChange("address", e.target.value))}
+
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Enter Address"
@@ -252,6 +365,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Contact no. 1</span>
           <input
+            value={formData.contact1}
+            onChange={(e)=>(handleDirectChange("contact1", e.target.value))}
+            
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Enter Aadhar Number"
@@ -261,6 +377,9 @@ const CandidateProfile: React.FC = () => (
         <div className="flex-1 flex flex-col items-start justify-center">
           <span className="text-sm">Contact no. 2</span>
           <input
+            value={formData.contact2}
+            onChange={(e)=>(handleDirectChange("contact2", e.target.value))}
+            
             type="text"
             className="bg-gray-100 rounded-md px-3 py-2 w-full"
             placeholder="Enter Address"
@@ -271,22 +390,47 @@ const CandidateProfile: React.FC = () => (
   </div>
 );
 
-const AcademicHistory: React.FC = () => (
+interface AcademicHistoryProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    place: string;
+    gender: string;
+    region: string;
+    aadhar: string;
+    address: string;
+    contact1: string;
+    contact2: string;
+    board: string;
+    marks: string;
+    guardianName: string;
+    contact: string;
+    preferences: [string, string, string, string, string];
+  };
+  handleDirectChange: (field: string, value: string) => void;
+}
+
+const AcademicHistory: React.FC<AcademicHistoryProps> = ({ formData, handleDirectChange }) => (
   <div className="">
     <h2 className="text-xl font-semibold mb-4">Academic History</h2>
 
     {/* Select Course */}
     <div className="flex flex-col mb-4">
       <label className="text-sm font-medium">Select Course</label>
-      <select className="bg-gray-100 rounded-md px-3 py-2 w-full">
+      <select
+     value={formData.course}
+        className="bg-gray-100 rounded-md px-3 py-2 w-full">
         <option value="plus_two">Plus Two</option>
-      </select>
+      </select> 
     </div>
 
     {/* Name of Institution */}
     <div className="flex flex-col mb-4">
       <label className="text-sm font-medium">Name of Institution</label>
       <input
+        value={formData.institution}
+        onChange={(e) => handleDirectChange("institution", e.target.value)}
         type="text"
         className="bg-gray-100 rounded-md px-3 py-2 w-full"
         placeholder="Enter institution name"
@@ -296,7 +440,10 @@ const AcademicHistory: React.FC = () => (
     {/* University / Board */}
     <div className="flex flex-col mb-4">
       <label className="text-sm font-medium">University / Board</label>
-      <select className="bg-gray-100 rounded-md px-3 py-2 w-full">
+      <select
+        value={formData.board}
+        onChange={(e) => handleDirectChange("board", e.target.value)}
+        className="bg-gray-100 rounded-md px-3 py-2 w-full">
         <option value="hse">HSE</option>
         <option value="cbse">CBSE</option>
       </select>
@@ -306,6 +453,8 @@ const AcademicHistory: React.FC = () => (
     <div className="flex flex-col mb-4">
       <label className="text-sm font-medium">Passed On</label>
       <input
+        value={formData.passedOn}
+        onChange={(e) => handleDirectChange("passedOn", e.target.value)}
         type="text"
         className="bg-gray-100 rounded-md px-3 py-2 w-full"
         placeholder="Mar-2024"
@@ -315,7 +464,28 @@ const AcademicHistory: React.FC = () => (
 );
 
 
-const QualifyingExamination: React.FC = () => {
+interface QualifyingExaminationProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    place: string;
+    gender: string;
+    region: string;
+    aadhar: string;
+    address: string;
+    contact1: string;
+    contact2: string;
+    board: string;
+    marks: string;
+    guardianName: string;
+    contact: string;
+    preferences: [string, string, string, string, string];
+  };
+  handleDirectChange: (field: string, value: string) => void;
+}
+
+const QualifyingExamination: React.FC<QualifyingExaminationProps> = ({ formData, handleDirectChange }) => {
   const [board, setBoard] = useState<string>("hse");
 
   const hseSubjects = ["Physics", "Chemistry", "Mathematics", "Biology", "English"];
@@ -358,7 +528,28 @@ const QualifyingExamination: React.FC = () => {
   );
 };
 
-const GuardianInfo: React.FC = () => {
+interface GuardianInfoProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    place: string;
+    gender: string;
+    region: string;
+    aadhar: string;
+    address: string;
+    contact1: string;
+    contact2: string;
+    board: string;
+    marks: string;
+    guardianName: string;
+    contact: string;
+    preferences: [string, string, string, string, string];
+  };
+  handleDirectChange: (field: string, value: string) => void;
+}
+
+const GuardianInfo: React.FC<GuardianInfoProps> = ({ formData, handleDirectChange }) => {
   return (
     <div>
       <h2 className="text-xl font-semibold">Guardian Info & Declaration</h2>
