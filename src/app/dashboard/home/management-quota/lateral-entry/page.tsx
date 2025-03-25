@@ -65,62 +65,67 @@ export default function AdmissionForm() {
   };
 
   return (
-    <div className="flex min-h-screen p-8">
+    <div className="flex flex-col space-y-3">
       {/* Left Sidebar (Tabs) */}
-      <div className="w-1/4 bg-white p-4 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Admission 2025-26</h2>
-        <ul className="space-y-3">
-          {tabs.map((tab, index) => (
-            <li
-              key={index}
-              className={`p-3 cursor-pointer rounded-lg ${
-                activeTab === index
-                  ? "bg-azure-600 text-white"
-                  : completedTabs[index]
-                  ? "bg-bgprimary text-gray-800"
-                  : "bg-red-50 text-red-500 cursor-not-allowed"
-              }`}
-              onClick={() => completedTabs[index] && setActiveTab(index)}
-            >
-              {tab}
-            </li>
-          ))}
-        </ul>
+      <div className=" p-6 bg-white">
+        <span className="text-azure-600 font-semibold text-xl">Management Quota - Lateral Entry</span>
       </div>
-
-      {/* Right Content Area */}
-      <div className="w-3/4 p-6 bg-white rounded-lg ml-6">
-        {/* Tab Content */}
-        <div>
-          {activeTab === 0 && (
-            <BranchPreference
-              preferences={preferences}
-              handleSelect={handleSelect}
-              getAvailableBranches={getAvailableBranches}
-            />
-          )}
-          {activeTab === 1 && <CandidateProfile />}
-          {activeTab === 2 && <AcademicHistory />}
-          {activeTab === 3 && <QualifyingExamination />}
-          {activeTab === 4 && <GuardianInfo />}
+      <div className="flex flex-row">
+        <div className="w-1/4 bg-white p-4 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Admission 2025-26</h2>
+          <ul className="space-y-3">
+            {tabs.map((tab, index) => (
+              <li
+                key={index}
+                className={`p-3 cursor-pointer rounded-lg ${
+                  activeTab === index
+                    ? "bg-azure-600 text-white"
+                    : completedTabs[index]
+                    ? "bg-bgprimary text-gray-800"
+                    : "bg-red-50 text-red-500 cursor-not-allowed"
+                }`}
+                onClick={() => completedTabs[index] && setActiveTab(index)}
+              >
+                {tab}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-6">
-          <button
-            className="px-6 py-2 bg-gray-500 text-white rounded-lg disabled:opacity-50"
-            onClick={handleBack}
-            disabled={activeTab === 0}
-          >
-            Back
-          </button>
-          <button
-            className="px-6 py-2 bg-azure-600 text-white rounded-lg disabled:opacity-50"
-            onClick={handleNext}
-            disabled={activeTab === tabs.length - 1}
-          >
-            Next
-          </button>
+        {/* Right Content Area */}
+        <div className="w-3/4 p-6 bg-white rounded-lg ml-6">
+          {/* Tab Content */}
+          <div>
+            {activeTab === 0 && (
+              <BranchPreference
+                preferences={preferences}
+                handleSelect={handleSelect}
+                getAvailableBranches={getAvailableBranches}
+              />
+            )}
+            {activeTab === 1 && <CandidateProfile />}
+            {activeTab === 2 && <AcademicHistory />}
+            {activeTab === 3 && <QualifyingExamination />}
+            {activeTab === 4 && <GuardianInfo />}
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-6">
+            <button
+              className="px-6 py-2 bg-gray-500 text-white rounded-lg disabled:opacity-50"
+              onClick={handleBack}
+              disabled={activeTab === 0}
+            >
+              Back
+            </button>
+            <button
+              className="px-6 py-2 bg-azure-600 text-white rounded-lg disabled:opacity-50"
+              onClick={handleNext}
+              disabled={activeTab === tabs.length - 1}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -314,12 +319,23 @@ const AcademicHistory: React.FC = () => (
   </div>
 );
 
-
 const QualifyingExamination: React.FC = () => {
   const [board, setBoard] = useState<string>("hse");
 
-  const hseSubjects = ["Physics", "Chemistry", "Mathematics", "Biology", "English"];
-  const cbseSubjects = ["Physics", "Chemistry", "Mathematics", "Computer Science", "English"];
+  const hseSubjects = [
+    "Physics",
+    "Chemistry",
+    "Mathematics",
+    "Biology",
+    "English",
+  ];
+  const cbseSubjects = [
+    "Physics",
+    "Chemistry",
+    "Mathematics",
+    "Computer Science",
+    "English",
+  ];
 
   return (
     <div className="p-6">
@@ -341,18 +357,20 @@ const QualifyingExamination: React.FC = () => {
 
       {/* Subject List and Marks Input */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {(board === "hse" ? hseSubjects : cbseSubjects).map((subject, index) => (
-          <div key={index} className="flex flex-col">
-            <label className="text-sm font-medium">{subject}</label>
-            <input
-              type="number"
-              className="bg-gray-100 rounded-md px-3 py-2 w-full"
-              placeholder="Enter marks"
-              min="0"
-              max="100"
-            />
-          </div>
-        ))}
+        {(board === "hse" ? hseSubjects : cbseSubjects).map(
+          (subject, index) => (
+            <div key={index} className="flex flex-col">
+              <label className="text-sm font-medium">{subject}</label>
+              <input
+                type="number"
+                className="bg-gray-100 rounded-md px-3 py-2 w-full"
+                placeholder="Enter marks"
+                min="0"
+                max="100"
+              />
+            </div>
+          )
+        )}
       </div>
     </div>
   );
@@ -376,12 +394,16 @@ const GuardianInfo: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Address (Residence)</label>
+          <label className="block text-sm font-medium">
+            Address (Residence)
+          </label>
           <textarea className="w-full p-2 border rounded"></textarea>
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Relationship with Applicant</label>
+          <label className="block text-sm font-medium">
+            Relationship with Applicant
+          </label>
           <input type="text" className="w-full p-2 border rounded" />
         </div>
 
@@ -398,4 +420,3 @@ const GuardianInfo: React.FC = () => {
     </div>
   );
 };
-
