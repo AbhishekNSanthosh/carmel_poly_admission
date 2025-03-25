@@ -168,9 +168,89 @@ const BranchPreference: React.FC<BranchPreferenceProps> = ({
 );
 
 const CandidateProfile: React.FC = () => (
-  <div>
+  <div className="flex flex-col gap-3">
     <h2 className="text-xl font-semibold">Candidate Profile</h2>
-    <p>Enter candidate details.</p>
+    <div className="flex flex-col gap-5">
+      <div className="flex w-full items-start gap-[10px]">
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">First Name</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">Last Name</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+      </div>
+      <div className="flex w-full items-start gap-[10px]">
+        <div className="flex-1 flex flex-col items-start justify-center">
+          <span className="text-sm">Date of Birth</span>
+          <input
+            type="date"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+          />
+        </div>
+
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">Place of birth</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+      </div>
+      <div className="flex w-full items-start gap-[10px]">
+        <div className="flex-1 flex flex-col items-start justify-center">
+          <span className="text-sm">Gender</span>
+          <select className="bg-gray-100 rounded-md px-3 py-2 w-full">
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">Religion</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+      </div>
+
+      <div className="flex w-full items-start gap-[10px]">
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">Community</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+
+        <div className="flex-1 flex flex-col items-start justify-center ">
+          <span className="text-sm">Email</span>
+          <input
+            type="text"
+            className="bg-gray-100 rounded-md px-3 py-2 w-full"
+            placeholder="Joel"
+          />
+        </div>
+      </div>
+
+
+
+    </div>
   </div>
 );
 
