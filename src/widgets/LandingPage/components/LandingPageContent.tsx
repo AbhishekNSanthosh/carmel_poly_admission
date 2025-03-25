@@ -58,9 +58,9 @@ export default function LandingPageContent() {
       )}
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row items-center justify-center flex-1 my-10 lg:m-0 md:p-0">
+      <div className="flex h-full flex-col md:flex-col items-center justify-center flex-1 lg:m-0 md:p-0">
         {/* Left Side - Image */}
-        <div className="flex-1 flex items-center justify-center w-full md:w-auto">
+        <div className="flex items-center justify-center w-full">
           <Image
             src={"/carmelpoly.png"}
             width={1000}
@@ -71,15 +71,15 @@ export default function LandingPageContent() {
         </div>
 
         {/* Right Side - Login or Choices */}
-        <div className="flex-1 flex flex-col items-center lg:justify-center w-full">
+        <div className="flex flex-col items-center lg:justify-center w-full">
           {!user ? (
             <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center text-center w-full max-w-sm">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">Login to continue</h2>
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition shadow-md"
+                className="w-full flex items-center justify-center border border-azure-600 gap-2 px-6 py-3"
               >
-                <img src="/google-icon.png" alt="Google" className="w-6 h-6" />
+                <Image src="/google.png" alt="Google" className="w-7 h-7 rounded-full" width={1000} height={1000}/>
                 Sign in with Google
               </button>
             </div>
