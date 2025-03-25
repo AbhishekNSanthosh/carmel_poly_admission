@@ -58,9 +58,9 @@ export default function LandingPageContent() {
       )}
 
       {/* Main Content */}
-      <div className="flex h-full flex-col md:flex-col items-center justify-center flex-1 lg:m-0 md:p-0">
+      <div className="flex flex-col md:flex-row items-center justify-center flex-1 my-10 lg:m-0 md:p-0">
         {/* Left Side - Image */}
-        <div className="flex items-center justify-center w-full">
+        <div className="flex-1 flex items-center justify-center w-full md:w-auto">
           <Image
             src={"/carmelpoly.png"}
             width={1000}
@@ -71,20 +71,20 @@ export default function LandingPageContent() {
         </div>
 
         {/* Right Side - Login or Choices */}
-        <div className="flex flex-col items-center lg:justify-center w-full">
+        <div className="flex-1 flex flex-col items-center lg:justify-center w-full">
           {!user ? (
-            <div className="bg-white p-8 rounded-lg shadow-lg flex flex-col items-center text-center w-full max-w-sm">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Login to continue</h2>
+            <div className="bg-white p-8 rounded-lg flex flex-col items-center text-center w-full max-w-sm">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Login to continue</h2>
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center border border-azure-600 gap-2 px-6 py-3"
+                className="w-full flex items-center justify-center rounded-[15px] border border-azure-600 gap-2 px-6 py-3 "
               >
                 <Image src="/google.png" alt="Google" className="w-7 h-7 rounded-full" width={1000} height={1000}/>
                 Sign in with Google
               </button>
             </div>
           ) : (
-            <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:px-8 lg:py-12 flex flex-col items-center justify-center space-y-5 border border-gray-300 rounded-lg shadow-lg bg-white">
+            <div className="w-11/12 lg:w-max max-w-md py-6 px-4 lg:px-8 lg:py-12 flex flex-col items-center justify-center space-y-5 rounded-lg bg-white">
               {/* Title */}
               <div>
                 <span className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
