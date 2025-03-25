@@ -43,7 +43,8 @@ export default function LandingPageContent() {
     <div className="w-full min-h-screen flex flex-col">
       {/* Navbar with User Info */}
       {user && (
-        <div className="w-full flex items-center justify-between px-6 py-4 shadow-md">
+        <div className="p-4">
+          <div className="w-full flex items-center justify-between px-6 py-4 bg-white">
           <span className="text-lg font-semibold">Welcome, {user.displayName}!</span>
           <div className="flex items-center gap-4">
             <Image width={100} height={100} src={user.photoURL || "/default-avatar.png"} alt="User" className="w-10 h-10 rounded-full border border-white shadow-md" />
@@ -54,6 +55,7 @@ export default function LandingPageContent() {
               Logout
             </button>
           </div>
+        </div>
         </div>
       )}
 
