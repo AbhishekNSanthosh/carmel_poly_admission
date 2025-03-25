@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { db } from "@common/config/firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc,doc, getDoc, setDoc  } from "firebase/firestore";
 
 export default function AdmissionForm() {
   // Define Tabs
@@ -46,10 +46,12 @@ export default function AdmissionForm() {
     board: string;
     marks: string;
     guardianName: string;
+    mark: Record<string, number>;
     contact: string;
     preferences: [string, string, string, string, string];
    }
 
+   
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -67,6 +69,14 @@ export default function AdmissionForm() {
     guardianName: "",
     contact: "",
     preferences: ["", "", "", "", ""] as [string, string, string, string, string],
+    course: "",
+    institution: "",
+    passedOn: "",
+    guardianAddress: "",
+    guardianRelation: "",
+    guardianContact: "",
+    monthlyIncome: "",
+    mark: {}, 
   });
   
 
@@ -88,6 +98,16 @@ export default function AdmissionForm() {
     }));
   };
 
+  const handleMarkChange = (subject: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      mark: {...prev.mark, [subject]: Number(value) } 
+    }));
+  };
+
+
+  
+
   // Get available branches for each dropdown (remove already selected ones)
   const getAvailableBranches = (selectedIndex: number): string[] => {
     return branches.filter(
@@ -95,9 +115,18 @@ export default function AdmissionForm() {
         !formData.preferences.includes(branch) || formData.preferences[selectedIndex] === branch
     );
   };
-
+  
+  // Reset `mark` inside `formData`
+  const resetMark = () => {
+    setFormData((prev) => ({
+      ...prev,
+      mark: {},
+    }));
+  };
+  
   // Handle Next Click
   const handleNext = () => {
+    console.log(formData)
     if (activeTab < tabs.length - 1) {
       const newCompletedTabs = [...completedTabs];
       newCompletedTabs[activeTab + 1] = true;
@@ -114,24 +143,23 @@ export default function AdmissionForm() {
   };
 
   const handleSubmit = async () => {
-  //   if (formDatapreferences.some((pref) => pref === "")) {
-  //     alert("Please select all branch preferences.");
-  //     return;
-  //   }
-  
-  //   try {
-  //     const formData = {
-  //       preferences,
-  //       timestamp: new Date(), // Store submission time
-  //     };
-  
-  //     await addDoc(collection(db, "admissions"), formData);
-  
-  //     alert("Form submitted successfully!");
-  //   } catch (error) {
-  //     console.error("Error submitting form:", error);
-  //     alert("Error submitting form. Please try again.");
-  //   }
+    console.log(formData)
+
+    try {
+      const docRef = doc(db, "admissions");
+      const docSnap = await getDoc(docRef);
+      const newData = { formData, timestamp: new Date().toLocaleString() };
+      console.log(newData);
+      if (!docSnap.exists()) {
+        await addDoc(collection(db, "admissions"), newData);
+      } else {
+        await setDoc(docRef, newData);
+      }
+      alert("Form submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Error submitting form. Please try again.");
+    }
   };
 
 
@@ -155,7 +183,7 @@ export default function AdmissionForm() {
           )}
           {activeTab === 1 && <CandidateProfile handleDirectChange={handleDirectChange} formData={formData} />}
           {activeTab === 2 && <AcademicHistory handleDirectChange={handleDirectChange} formData={formData}  />}
-          {activeTab === 3 && <QualifyingExamination handleDirectChange={handleDirectChange} formData={formData}  />}
+          {activeTab === 3 && <QualifyingExamination handleMarkChange={handleMarkChange} formData={formData} handleDirectChange={handleDirectChange} resetMark={resetMark} />}
           {activeTab === 4 && <GuardianInfo handleDirectChange={handleDirectChange} formData={formData} />}
         </div>
 
@@ -390,6 +418,9 @@ interface AcademicHistoryProps {
     guardianName: string;
     contact: string;
     preferences: [string, string, string, string, string];
+    course: string;
+    institution: string;
+    passedOn: string;
   };
   handleDirectChange: (field: string, value: string) => void;
 }
@@ -402,7 +433,8 @@ const AcademicHistory: React.FC<AcademicHistoryProps> = ({ formData, handleDirec
     <div className="flex flex-col mb-4">
       <label className="text-sm font-medium">Select Course</label>
       <select
-     value={formData.course}
+        value={formData.course}
+        onChange={(e) => handleDirectChange("course", e.target.value)}
         className="bg-gray-100 rounded-md px-3 py-2 w-full">
         <option value="plus_two">Plus Two</option>
       </select> 
@@ -448,27 +480,16 @@ const AcademicHistory: React.FC<AcademicHistoryProps> = ({ formData, handleDirec
 
 
 interface QualifyingExaminationProps {
+  handleMarkChange: (field: string, value: string) => void;
   formData: {
-    firstName: string;
-    lastName: string;
-    dob: string;
-    place: string;
-    gender: string;
-    region: string;
-    aadhar: string;
-    address: string;
-    contact1: string;
-    contact2: string;
     board: string;
-    marks: string;
-    guardianName: string;
-    contact: string;
-    preferences: [string, string, string, string, string];
-  };
+    mark: Record<string, number>;
+  }
   handleDirectChange: (field: string, value: string) => void;
+  resetMark: () => void;
 }
 
-const QualifyingExamination: React.FC<QualifyingExaminationProps> = ({ formData, handleDirectChange }) => {
+const QualifyingExamination: React.FC<QualifyingExaminationProps> = ({handleMarkChange,formData,handleDirectChange, resetMark }) => {
   const [board, setBoard] = useState<string>("hse");
 
   const hseSubjects = [
@@ -496,8 +517,8 @@ const QualifyingExamination: React.FC<QualifyingExaminationProps> = ({ formData,
         <label className="text-sm font-medium">Select Board</label>
         <select
           className="bg-gray-100 rounded-md px-3 py-2 w-full"
-          value={board}
-          onChange={(e) => setBoard(e.target.value)}
+          value={formData.board}
+          onChange={(e) => { handleDirectChange("board", e.target.value); resetMark()}}
         >
           <option value="hse">HSE</option>
           <option value="cbse">CBSE</option>
@@ -511,6 +532,8 @@ const QualifyingExamination: React.FC<QualifyingExaminationProps> = ({ formData,
             <div key={index} className="flex flex-col">
               <label className="text-sm font-medium">{subject}</label>
               <input
+                value={formData.mark[subject] || ""}
+                onChange={(e) => handleMarkChange(subject, e.target.value)}
                 type="number"
                 className="bg-gray-100 rounded-md px-3 py-2 w-full"
                 placeholder="Enter marks"
@@ -540,7 +563,11 @@ interface GuardianInfoProps {
     board: string;
     marks: string;
     guardianName: string;
+    guardianAddress: string;
     contact: string;
+    guardianRelation: string;
+    guardianContact: string;
+    monthlyIncome: string;
     preferences: [string, string, string, string, string];
   };
   handleDirectChange: (field: string, value: string) => void;
@@ -555,7 +582,10 @@ const GuardianInfo: React.FC<GuardianInfoProps> = ({ formData, handleDirectChang
       <form className="mt-4 space-y-4">
         <div>
           <label className="block text-sm font-medium">Name of Guardian</label>
-          <input type="text" className="w-full p-2 border rounded" />
+          <input type="text"
+            value={formData.guardianName}
+            onChange={(e) => handleDirectChange("guardianName", e.target.value)}
+            className="w-full p-2 border rounded" />
         </div>
 
         <div>
@@ -567,24 +597,39 @@ const GuardianInfo: React.FC<GuardianInfoProps> = ({ formData, handleDirectChang
           <label className="block text-sm font-medium">
             Address (Residence)
           </label>
-          <textarea className="w-full p-2 border rounded"></textarea>
+          <textarea value={formData.guardianAddress}
+            onChange={(e) => handleDirectChange("guardianAddress", e.target.value)}
+            className="w-full p-2 border rounded"></textarea>
         </div>
 
         <div>
           <label className="block text-sm font-medium">
             Relationship with Applicant
           </label>
-          <input type="text" className="w-full p-2 border rounded" />
+          <input type="text"
+            value={formData.guardianRelation}
+            onChange={(e) => handleDirectChange("guardianRelation", e.target.value)}
+            className="w-full p-2 border rounded" />
         </div>
 
         <div>
           <label className="block text-sm font-medium">Monthly Income</label>
-          <input type="number" className="w-full p-2 border rounded" />
+          <input type="number"
+            value={formData.monthlyIncome}
+            onChange={(e) => handleDirectChange("monthlyIncome", e.target.value
+
+            )}
+            className="w-full p-2 border rounded" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Phone Number</label>
-          <input type="tel" className="w-full p-2 border rounded" />
+          <label
+            
+            className="block text-sm font-medium">Phone Number</label>
+          <input type="tel"
+            value={formData.guardianContact}
+            onChange={(e) => handleDirectChange("guardianContact", e.target.value)}
+            className="w-full p-2 border rounded" />
         </div>
       </form>
     </div>
