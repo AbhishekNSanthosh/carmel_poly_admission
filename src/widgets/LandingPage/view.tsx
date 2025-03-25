@@ -1,7 +1,10 @@
 import React from 'react'
+import LandingPageContent from './components/LandingPageContent'
 
 export default function LandingPageView() {
   return (
-    <div>view</div>
+    <main>
+      <LandingPageContent/>
+    </main>
   )
 }
