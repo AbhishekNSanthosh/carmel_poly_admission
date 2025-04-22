@@ -35,7 +35,7 @@ export default function RootLayout({
       </div>
       <div className="flex flex-row w-full h-full">
         <Sidebar />
-        <div className="pt-[13vh] pl-[16vw] bg-azure-50 bg-opacity-50 w-full min-h-[100vh] pb-[1vw]">{children}</div>
+        <div className="pt-[13vh] pl-[16vw] bg-azure-50 bg-opacity-50 w-full min-h-[100vh] pb-[1vw] pr-[1vw]">{children}</div>
       </div>
     </main>
   );

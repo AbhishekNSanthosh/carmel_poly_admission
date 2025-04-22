@@ -143,18 +143,11 @@ export default function AdmissionForm() {
   };
 
   const handleSubmit = async () => {
-    console.log(formData)
-
+    console.log(formData);
+  
     try {
-      const docRef = doc(db, "admissions");
-      const docSnap = await getDoc(docRef);
-      const newData = { formData, timestamp: new Date().toLocaleString() };
-      console.log(newData);
-      if (!docSnap.exists()) {
-        await addDoc(collection(db, "admissions"), newData);
-      } else {
-        await setDoc(docRef, newData);
-      }
+      const newData = { ...formData, timestamp: new Date().toLocaleString() };
+      await addDoc(collection(db, "admissions"), newData);
       alert("Form submitted successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
