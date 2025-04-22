@@ -49,6 +49,7 @@ export default function AdmissionForm() {
     mark: Record<string, number>;
     contact: string;
     preferences: [string, string, string, string, string];
+    category:string;
    }
 
    
@@ -77,6 +78,7 @@ export default function AdmissionForm() {
     guardianContact: "",
     monthlyIncome: "",
     mark: {}, 
+    category:"management_lateral_entry"
   });
   
 
